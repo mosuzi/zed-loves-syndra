@@ -34,9 +34,17 @@ interface ReaderShellProps {
   children: ReactNode;
 }
 
-const LAST_CHAPTER_KEY = 'ying-shi-tian-qiong:last-chapter';
-const THEME_KEY = 'ying-shi-tian-qiong:theme';
-const FONT_KEY = 'ying-shi-tian-qiong:font-scale';
+const STORAGE_NAMESPACE = 'zed-loves-syndra';
+const LEGACY_STORAGE_NAMESPACE = 'ying-shi-tian-qiong';
+const LAST_CHAPTER_KEY = `${STORAGE_NAMESPACE}:last-chapter`;
+const THEME_KEY = `${STORAGE_NAMESPACE}:theme`;
+const FONT_KEY = `${STORAGE_NAMESPACE}:font-scale`;
+
+function getStoredValue(key: string, legacyKey: string) {
+  return (
+    window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey)
+  );
+}
 
 function ChapterList({ chapters, currentSlug }: { chapters: ChapterLink[]; currentSlug: string }) {
   const grouped = useMemo(() => {
@@ -78,10 +86,18 @@ export function ReaderShell({ chapter, chapters, previous, next, children }: Rea
   const [resumeProgress, setResumeProgress] = useState<number | null>(null);
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem(THEME_KEY);
-    const storedScale = Number(window.localStorage.getItem(FONT_KEY));
+    const storedTheme = getStoredValue(
+      THEME_KEY,
+      `${LEGACY_STORAGE_NAMESPACE}:theme`,
+    );
+    const storedScale = Number(
+      getStoredValue(FONT_KEY, `${LEGACY_STORAGE_NAMESPACE}:font-scale`),
+    );
     const storedProgress = Number(
-      window.localStorage.getItem(`ying-shi-tian-qiong:progress:${chapter.slug}`),
+      getStoredValue(
+        `${STORAGE_NAMESPACE}:progress:${chapter.slug}`,
+        `${LEGACY_STORAGE_NAMESPACE}:progress:${chapter.slug}`,
+      ),
     );
 
     if (storedTheme === 'paper' || storedTheme === 'gray') setTheme('gray');
@@ -113,7 +129,7 @@ export function ReaderShell({ chapter, chapters, previous, next, children }: Rea
         const ratio = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
         setProgress(ratio);
         window.localStorage.setItem(
-          `ying-shi-tian-qiong:progress:${chapter.slug}`,
+          `${STORAGE_NAMESPACE}:progress:${chapter.slug}`,
           String(ratio),
         );
       });
