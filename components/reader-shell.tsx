@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/sheet';
 import type { ChapterLink } from '@/lib/chapters';
 
-type ReaderTheme = 'paper' | 'night';
+type ReaderTheme = 'gray' | 'night';
 
 interface ReaderShellProps {
   chapter: ChapterLink;
@@ -72,19 +72,20 @@ function ChapterList({ chapters, currentSlug }: { chapters: ChapterLink[]; curre
 }
 
 export function ReaderShell({ chapter, chapters, previous, next, children }: ReaderShellProps) {
-  const [theme, setTheme] = useState<ReaderTheme>('paper');
+  const [theme, setTheme] = useState<ReaderTheme>('gray');
   const [fontScale, setFontScale] = useState(1);
   const [progress, setProgress] = useState(0);
   const [resumeProgress, setResumeProgress] = useState<number | null>(null);
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem(THEME_KEY) as ReaderTheme | null;
+    const storedTheme = window.localStorage.getItem(THEME_KEY);
     const storedScale = Number(window.localStorage.getItem(FONT_KEY));
     const storedProgress = Number(
       window.localStorage.getItem(`ying-shi-tian-qiong:progress:${chapter.slug}`),
     );
 
-    if (storedTheme === 'paper' || storedTheme === 'night') setTheme(storedTheme);
+    if (storedTheme === 'paper' || storedTheme === 'gray') setTheme('gray');
+    if (storedTheme === 'night') setTheme('night');
     if (storedScale >= 0.9 && storedScale <= 1.25) setFontScale(storedScale);
     if (storedProgress > 0.05 && storedProgress < 0.93) setResumeProgress(storedProgress);
 
@@ -176,10 +177,10 @@ export function ReaderShell({ chapter, chapters, previous, next, children }: Rea
           <Button
             variant="ghost"
             size="icon"
-            aria-label={theme === 'paper' ? '切换到夜间阅读' : '切换到纸张阅读'}
-            onClick={() => setTheme(theme === 'paper' ? 'night' : 'paper')}
+            aria-label={theme === 'gray' ? '切换到夜间阅读' : '切换到浅灰阅读'}
+            onClick={() => setTheme(theme === 'gray' ? 'night' : 'gray')}
           >
-            {theme === 'paper' ? <MoonStar /> : <Sun />}
+            {theme === 'gray' ? <MoonStar /> : <Sun />}
           </Button>
         </div>
       </header>

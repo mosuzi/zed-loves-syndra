@@ -3,10 +3,10 @@
 @import 'shadcn/tailwind.css';
 
 :root {
-  --ink: #17151d;
-  --ink-soft: #514c5d;
-  --paper: #f3efe6;
-  --paper-deep: #e5ded1;
+  --ink: #17181d;
+  --ink-soft: #4d5059;
+  --paper: #d9dadd;
+  --paper-deep: #c9cbd0;
   --violet: #7158a8;
   --violet-deep: #3f315f;
   --line: rgba(23, 21, 29, 0.15);
@@ -136,11 +136,11 @@ a { color: inherit; text-decoration: none; }
 /* Reading surface */
 html[data-reader-theme='night'] body { background: #121118; }
 .reader-shell {
-  --reader-bg: #f4f0e7;
-  --reader-panel: #ebe5da;
-  --reader-text: #2b2830;
-  --reader-muted: #76707c;
-  --reader-line: rgba(35, 31, 40, 0.13);
+  --reader-bg: #dcdee2;
+  --reader-panel: #cfd2d8;
+  --reader-text: #25262c;
+  --reader-muted: #656872;
+  --reader-line: rgba(31, 33, 40, 0.15);
   --reader-accent: #6f55a7;
   min-height: 100vh;
   background: var(--reader-bg);
