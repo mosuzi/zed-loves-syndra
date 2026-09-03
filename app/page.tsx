@@ -32,7 +32,7 @@ export default function Home() {
         </div>
 
         <figure className="hero-cover">
-          <img src="/og.png" alt="《影蚀天穹》封面：暗紫天幕下，黑色天体悬于山峦之上" />
+          <img src="/illustrations/cover.png" alt="《影蚀天穹》正式封面：辛德拉悬于浮空堡垒前，劫停在门槛之外" />
           <figcaption>选择 · 边界 · 未被关闭之门</figcaption>
         </figure>
       </section>
