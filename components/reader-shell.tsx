@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties, ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   BookOpenText,
   ChevronLeft,
@@ -47,6 +47,30 @@ function getStoredValue(key: string, legacyKey: string) {
 }
 
 function ChapterList({ chapters, currentSlug }: { chapters: ChapterLink[]; currentSlug: string }) {
+  const currentLinkRef = useRef<HTMLAnchorElement>(null);
+
+  useLayoutEffect(() => {
+    const link = currentLinkRef.current;
+    const container = link?.closest<HTMLElement>('[data-toc-scroll]');
+    if (!link || !container) return;
+
+    const revealCurrentChapter = () => {
+      if (container.clientHeight === 0) return;
+      const viewport = container.getBoundingClientRect();
+      const item = link.getBoundingClientRect();
+      const top = viewport.top + container.clientTop;
+      if (item.top >= top && item.bottom <= top + container.clientHeight) return;
+
+      // Scroll only the directory; scrolling ancestors would also move the prose.
+      container.scrollTop += item.top - top - (container.clientHeight - item.height) / 2;
+    };
+
+    revealCurrentChapter();
+    const observer = new ResizeObserver(revealCurrentChapter);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [currentSlug]);
+
   const grouped = useMemo(() => {
     const groups = new Map<number, ChapterLink[]>();
     for (const chapter of chapters) {
@@ -64,6 +88,7 @@ function ChapterList({ chapters, currentSlug }: { chapters: ChapterLink[]; curre
             {items.map((item) => (
               <li key={item.slug}>
                 <a
+                  ref={item.slug === currentSlug ? currentLinkRef : undefined}
                   aria-current={item.slug === currentSlug ? 'page' : undefined}
                   href={`/read/${item.slug}`}
                 >
@@ -185,7 +210,7 @@ export function ReaderShell({ chapter, chapters, previous, next, children }: Rea
                 <SheetTitle>章节目录</SheetTitle>
                 <SheetDescription>五卷三十章与尾声</SheetDescription>
               </SheetHeader>
-              <div className="reader-sheet-scroll">
+              <div className="reader-sheet-scroll" data-toc-scroll>
                 <ChapterList chapters={chapters} currentSlug={chapter.slug} />
               </div>
             </SheetContent>
@@ -203,7 +228,7 @@ export function ReaderShell({ chapter, chapters, previous, next, children }: Rea
 
       <div className="reader-layout">
         <aside className="reader-sidebar">
-          <div className="reader-sidebar-inner">
+          <div className="reader-sidebar-inner" data-toc-scroll>
             <a className="back-to-book" href="/">
               <BookOpenText size={15} aria-hidden="true" /> 返回作品页
             </a>
